@@ -1,0 +1,26 @@
+name: build
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*.*.*'
+jobs:
+  docker-build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      # nosemgrep
+      - uses: tapclap/build-images-action@main
+        id: build-images
+        with:
+          registry: ghcr.io
+          registry-user: ${{ github.repository_owner }}
+          registry-password: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+          latest: true
+          operation: build-and-push
+          build-opts: |
+            - name: supercronic
+              file: ./Dockerfile
+              repo-image-name: true
